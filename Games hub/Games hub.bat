@@ -7,19 +7,60 @@ chcp 65001 >nul
 color 4
 
 {
-  :acesso
+  :VERIFICAR_ATUALIZACAO
+  @echo off
+  setlocal enabledelayedexpansion
+  
+  echo Verificando atualizações...
+  set "repo_url=https://github.com/amito12309856/GamesHub/raw/main/Games%20hub.bat"
+  set "temp_file=%temp%\Games_hub_novo.bat"
+
+  bitsadmin /transfer atualizar /download /priority high "%repo_url%" "%temp_file%" >nul
+
+  if not exist "%temp_file%" (
+      echo Erro: Não foi possível baixar a atualização.
+      timeout /t 3 >nul
+      goto acesso
+  )
+
+  fc /b "%~f0" "%temp_file%" >nul
+  if %errorlevel% equ 0 (
+      echo Seu hub já está na versão mais recente!
+      del "%temp_file%" >nul
+      timeout /t 2 >nul
+      goto acesso
+  )
+
+  echo Nova versão encontrada! Atualizando...
+  timeout /t 3 >nul
+
+  copy "%~f0" "%~dp0Games hub_backup.bat" >nul
+
+  ren "%~f0" "Games_hub_old.bat" >nul
+  move /y "%temp_file%" "Games hub.bat" >nul
+  del "Games_hub_old.bat" >nul
+
+  start "" "Games hub.bat"
+  goto acesso
+}
+
+{
   @echo off
   setlocal
-
-  set "logfile=acessos.txt"
-
-  for /f "tokens=1-3 delims= " %%a in ('date /t') do set "data=%%a%%b%%c"
+  
+  set "logfile=logs\acessos.txt"
+  
+  if not exist logs (
+      mkdir logs
+  )
+  
+  for /f "tokens=1-3 delims= " %%a in ('date /t') do set "data=%%a %%b %%c"
   for /f "tokens=1-2 delims=:" %%a in ('time /t') do set "hora=%%a:%%b"
-
+  
   set "entrada=%data% %hora%"
-
- echo [ACESSO] Data %data% e Hora %hora%  >> "logs\acessos.txt"
-
+  
+  echo [ACESSO] Data %data% e Hora %hora% >> "%logfile%"
+  
   echo Acesso registrado em %logfile%: %entrada%
   
   goto telaini
