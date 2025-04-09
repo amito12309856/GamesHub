@@ -45,6 +45,7 @@ color 4
 }
 
 {
+  :acesso
   @echo off
   setlocal
   
@@ -54,7 +55,7 @@ color 4
       mkdir logs
   )
   
-  for /f "tokens=1-3 delims= " %%a in ('date /t') do set "data=%%a %%b %%c"
+  for /f "tokens=1-3 delims= " %%a in ('date /t') do set "data=%%a%%b%%c"
   for /f "tokens=1-2 delims=:" %%a in ('time /t') do set "hora=%%a:%%b"
   
   set "entrada=%data% %hora%"
@@ -62,6 +63,41 @@ color 4
   echo [ACESSO] Data %data% e Hora %hora% >> "%logfile%"
   
   echo Acesso registrado em %logfile%: %entrada%
+  
+  goto plugins
+}
+
+{
+  :plugins
+  @echo off
+  setlocal enabledelayedexpansion
+
+  set "pasta=plugins\estatisticas"
+  set "tempo_file=%pasta%\tempo_total.txt"
+  set "acessos_file=%pasta%\acessos_dia.txt"
+
+  if not exist "%pasta%" mkdir "%pasta%"
+  if not exist "%tempo_file%" echo 0 > "%tempo_file%"
+  if not exist "%acessos_file%" echo. > "%acessos_file%"
+
+  for /f %%a in (%tempo_file%) do set /a "novo_tempo=%%a+5"
+  echo !novo_tempo! > "%tempo_file%"
+
+  for /f "tokens=1-3 delims=/ " %%a in ('date /t') do set "hoje=%%a-%%b-%%c"
+  set "encontrado=0"
+  
+  (for /f "tokens=1,2 delims=|" %%a in (%acessos_file%) do (
+      if "%%a"=="%hoje%" (
+          set /a "contador=%%b+1"
+          echo %%a^|!contador!
+          set "encontrado=1"
+      ) else (
+          echo %%a^|%%b
+      )
+  ) ) > temp.txt
+  
+  if !encontrado!==0 echo %hoje%^|1 >> temp.txt
+  move /y temp.txt "%acessos_file%" >nul
   
   goto telaini
 }
