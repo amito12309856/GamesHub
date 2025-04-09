@@ -1,4 +1,4 @@
-:: feito em 4 dias. (estou atualizando diariamente)
+:: feito em 5 dias. (estou atualizando diariamente)
 
 @echo off
 title Games Hub By Xamito e enis7
@@ -149,7 +149,7 @@ color 4
       echo ----------------- >> "assets\codigos.txt"
       echo leet:1337 H4x0r >> "assets\codigos.txt"
       echo phantom:VPN Phantom >> "assets\codigos.txt"
-      echo. >> "assets\codigos.txt"
+      echo velha:Como??? >> "assets\codigos.txt"
   )
   
   :MENU
@@ -210,6 +210,11 @@ color 4
       call :CHECK_CONQUISTA 2 "VPN Phantom" "IP: Localizado na Lua?"
       goto MENU
   )
+    if "%codigo%"=="velha" (
+      call :CHECK_CONQUISTA 3 "Como???" "Você descobriu um jogo secreto, um gênio?"
+      goto MENU
+  )
+
   
   echo    Código inválido! Tente novamente.
   pause
